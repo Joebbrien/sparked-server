@@ -29,7 +29,14 @@ const userResolver = {
           .string()
           .required()
           .email(),
-        password: yup.string().required(),
+        password: yup
+          .string()
+          .required()
+          .test(
+            "len",
+            "Must be atleast eight (8) characters long",
+            val => val.length === 8
+          ),
         name: yup.string().required(),
         gender: yup.string().required(),
         role: yup.string()
