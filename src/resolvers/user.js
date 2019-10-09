@@ -42,13 +42,12 @@ const userResolver = {
         role: yup.string()
       });
 
-      const test = await validate
+      const checkEmpty = await validate
         .validate({ email, password, name, gender, role })
         .catch(function(err) {
           throw new Error(err);
         });
-      console.log(test);
-      if (test) {
+      if (checkEmpty) {
         let user = new User();
         user.email = email;
         user.name = name;
@@ -78,8 +77,12 @@ const userResolver = {
         password: yup.string().required()
       });
 
-      const isEmpty = await validate.isValid({ email, password });
-      if (isEmpty === false) {
+      const isEmpty = await validate
+        .validate({ email, password })
+        .catch(function(err) {
+          throw new Error(err);
+        });
+      if (!isEmpty) {
         //Some of the fields are empty
         throw new Error(`email or password cannot be empty`);
       } else {
