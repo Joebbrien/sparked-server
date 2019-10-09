@@ -34,28 +34,21 @@ const userResolver = {
           .required()
           .test(
             "len",
-            "Must be atleast eight (8) characters long",
-            val => val.length === 8
+            "Password must be atleast eight (8) characters long",
+            val => val.length >= 8
           ),
         name: yup.string().required(),
         gender: yup.string().required(),
         role: yup.string()
       });
-      const isEmpty = await validate.isValid({
-        email,
-        password,
-        name,
-        gender,
-        role
-      });
-      console.log(isEmpty);
-      if (isEmpty === false) {
-        // some fields are empty or missing
-        throw new Error(
-          `Some fields sent are empty, please fill in all the fields.`
-        );
-      } else {
-        //all fileds are not empty
+
+      const test = await validate
+        .validate({ email, password, name, gender, role })
+        .catch(function(err) {
+          throw new Error(err);
+        });
+      console.log(test);
+      if (test) {
         let user = new User();
         user.email = email;
         user.name = name;
@@ -72,6 +65,8 @@ const userResolver = {
         const users = await User.find({});
         user.role = !users.length ? "admin" : "student";
         return user.save();
+      } else {
+        throw new Error("Something wrong has accured, try again");
       }
     },
     async login(root, { email, password }, { SECRET }) {
